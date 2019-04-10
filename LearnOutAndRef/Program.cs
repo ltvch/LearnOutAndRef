@@ -1,19 +1,35 @@
-sing System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+/// <summary>
+/// Case - Написать методы с помощью которых реверсивно заменить значение двух переменных.
+/// Условия - Различаться методы должны своей сигнатурой, а не манипуляциями при смене значений у переменных.
+/// 
+/// Обоснование - сигнутура это то, что однозначно идентифицирует конкретный метод при его перегрузке(overload).
+/// 
+/// Т.е. С# сигнатурой признают имя метода, количество, типы, последовательность и имена аргументов.
+/// 
+/// Без задействования делегатов тип возвращаемого значения считать сигнатурой НЕКОРРЕКТНО.
+/// 
+/// Ре. По очевидным причинам при решении используем только изменения количества и типа агрументов.
+/// </summary>
 namespace LearnOutAndRef
 {
+
     public class Program
     {
         private int tmp;
 
         private int outA, outB;
         public static int testA, testB;
-        int a = 1;
-        int b = 2;
+        private int a = 1;
+        private int b = 2;
+
+        public struct Swapable
+        {
+            public int A;
+            public int B;
+        }
 
         /// <summary>
         /// Swap values use 4 parameters where 2 like temp variable
@@ -136,23 +152,27 @@ namespace LearnOutAndRef
         /// <param name="a">First</param>
         /// <param name="b">Second</param>
         /// <returns>reverce parameters inside result container</returns>
-        public static Tuple<int, int> Swap6(int a, int b) =>
-            new Tuple<int, int>(b, a);
+        public static Tuple<int, int> Swap6(Tuple<int, int> tuple)
+        {
+            return new Tuple<int, int>(tuple.Item2, tuple.Item1);
+        }
 
         /// <summary>
-        /// Swap use special containter like dictionary
+        /// Swap use special containter for pair values like dictionary
         /// </summary>
         /// <param name="a">First</param>
         /// <param name="b">Second</param>
         /// <returns>reverse paremeters inside result container</returns>
-        public static KeyValuePair<int, int> Swap7(int a, int b) =>
-            new KeyValuePair<int, int>(b, a);
+        public static KeyValuePair<int, int> Swap7(int a, int b)
+        {
+            return new KeyValuePair<int, int>(b, a);
+        }
 
         /// <summary>
         /// Swap use param key for parameter like array of int
         /// </summary>
         /// <param name="array">Container for undefinite count of value -> parameters</param>
-        /// <returns></returns>
+        /// <returns>Array with reversed values</returns>
         public static int[] Swap8(params int[] array)
         {
             int temp;
@@ -161,18 +181,30 @@ namespace LearnOutAndRef
             array[1] = temp;
             return array;
         }
+
         /// <summary>
-        /// return a = a ^ b ^ (b = a);
+        /// Swap use XOR operations;
         /// </summary>
         /// <param name="a"></param>
-        public static int Swap9_1(int a)
+        /// <returns>swapped params</returns>
+        public static int Swap9(ref int a, ref int b)
         {
-            //return a = a ^ b ^ (b = a);
-            return a;
+            return a = a ^ b ^ (b = a);
+        }
+
+        /// <summary>
+        /// Swap use out structure as container for value
+        /// </summary>
+        /// <param name="swapable">Structure with field for variable</param>
+        /// <returns>Structure values swapped</returns>
+        public Swapable Swap10(Swapable swapable)
+        {
+            return new Swapable() { A = swapable.B, B = swapable.A };
         }
 
 
-        static void Main(string[] args)
+
+        public static void Main(string[] args)
         {
             int one = 1;
             int two = 2;
@@ -181,7 +213,35 @@ namespace LearnOutAndRef
 
             // Swap4(one, two, ref temp);
             // Swap2(one, two, out o1, out o2);
-           //Swap5(ref one, ref two, ref temp);
+            //Swap5(ref one, ref two, ref temp);
+
+            float startAngle = 159.9F;
+            float stopAngle = 355.87F;
+            startAngle = startAngle.Swap12(ref stopAngle);
+        }
+    }
+
+    /// <summary>
+    /// Use extension method
+    /// </summary>
+    /// <remarks>
+    /// For use extension method we need create static class
+    /// inside them put this static method.
+    /// </remarks>
+    static class A
+    {
+        /// <summary>
+        /// Swap use extension method
+        /// </summary>
+        /// <typeparam name="T">Like link temp paremeter</typeparam>
+        /// <param name="a">First</param>
+        /// <param name="b">Second</param>
+        /// <returns></returns>
+        public static T Swap12<T>(this T a, ref T b)
+        {
+            T tp = b;
+            b = a;
+            return tp;
         }
     }
 }
